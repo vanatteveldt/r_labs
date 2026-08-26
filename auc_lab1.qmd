@@ -1,0 +1,163 @@
+---
+title: "AUC Lab1"
+author: "Your names here"
+format: docx
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning=FALSE)
+library(printr)
+```
+
+
+# Introduction
+
+This assignment consists of two parts, with two learning goals.
+
+First, we ask you to run a very simple analysis on a data set of the last Dutch elections. 
+The main goal is to show that you have installed R, can work with Quarto documents, 
+and can run simple commands. 
+
+Next, we ask you to look at a quite complex piece of R code. 
+You are not expected to (completely) understand this code. 
+The goal is to use Claude (or another genAI tool of your choice)
+to answer a number of questions about the code,
+and then reflect on your use of AI. 
+
+## Part 1: 
+
+### Install RStudio and Tidyverse
+
+Install RStudio and Tidyverse on your computer. You can follow [these instructions](https://rstudio-education.github.io/hopr/starting.html) or any other instructions
+to install R and RStudio.
+
+To install tidyverse, you can use the 'Packages' pane in RStudio,
+or run `install.packages("tidyverse")`. 
+Do *not* include this command in your quarto submission!
+
+If you already have R and tidyverse installed, you might want to update it to ensure you have a recent version.
+
+### Data
+
+We will use a simplified version of the 'Dutch elections' data from the R4CSS book:
+
+```{r data}
+library(tidyverse)
+votes <- read_csv("https://raw.githubusercontent.com/vanatteveldt/auc_labs/refs/heads/main/data/dutch_votes_combined.csv")
+head(votes)
+```
+
+This shows the vote share of each party in each municipality, as well as the total population and the percentage Dutch-born population in the town.
+
+### Filtering and sorting
+
+Choose a political party. 
+Edit the code below to **filter** the data set to show only results from that party,
+and **arrange** the data set by descending votes:
+
+```{r party}
+votes_party <- filter(votes)
+votes_party <- arrange(votes_party)
+head(votes_party)
+```
+
+Where does that party do well? Look up the party and one or two of the municipalities on wikipedia:
+does it make sense that that party would do well there? 
+
+**Enter your findings and explanation here (2-3 sentences)**
+
+### Scatter plot
+
+Now, let's see to what extent the party is more successful in larger or smaller municipalities,
+*or* (your choice) in muncipalities with a higher or lower share of Dutch born citizens. 
+
+First, let's first create a scatter plot to see to what extent their voting seems related.
+In the code below, remove the `#` sign and fill in the blanks so the population is on the x-axis, 
+and either the vote share or percentage Dutch are on the y-axis:
+
+```{r scatter}
+# ggplot(votes_party, aes(x=___, y=___)) + geom_point()
+```
+
+Interpretation: How do you interpret the scatter plot? Does there seem to be a relation between population size and votes?
+
+**Enter your findings and explanation here (2-3 sentences)**
+
+Bonus: If you want, you can add `+ labs(title="my title", y="Vote share", x="Population") + theme_classic()` to the plot to add labels and change the theme. Feel free to make other changes to the plot as you see fit!
+
+## Part 2: Understanding R with Claude
+
+The code below is from the visualization exercise at the end of Chapter 8 of R4CSS.
+Substantively, it is a reproduction of Figure 1 from a 538 article on the Bechdel test:
+[The Dollar-And-Cents Case Against Hollywood's Exclusion of Women](https://archive.ph/e7xDQ).
+It shows how many films from each half-decade pass the 'Bechdel test':
+Is there any scene in which two women talk to each other about something else than a man?
+
+Run the code below and have a look at the result:
+
+```{r}
+bechdel <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r4css/refs/heads/main/data/bechdel.csv")
+
+fig1data <- bechdel |>
+  mutate(test = str_remove(test, "-disagree"),
+         lustrum = floor(year / 5) * 5) |>
+  group_by(lustrum) |>
+  mutate(start = min(year),
+         end = max(year),
+         period = str_glue("{start}-\n'{str_sub(end, 3, 4)}")) 
+
+colors <- c(nowomen = "#ff2700", notalk = "#ff9380", men = "#ffc9bf",
+            dubious = "#6bb2d5", ok = "#008fd5")
+periods <- fig1data |> pull(period) |> unique() |> sort()
+breaks <- periods[seq(1, length(periods), by = 2)]
+
+ggplot(fig1data) +
+  geom_bar(aes(x = period, fill = factor(test, levels = names(colors))), position = "fill") +
+  scale_fill_manual(values = colors, guide = "none") +
+  labs(title = "The Bechdel Test Over Time",
+       subtitle = "How women are represented in movies") +
+  scale_y_continuous(name = "", labels = scales::label_percent()) +
+  scale_x_discrete(name = "", breaks = breaks) +
+  annotate("text", label = "FAIL", y = .75, x = 5, size = 20, fontface = "bold") +
+  annotate("text", label = "PASS", y = .25, x = 5, size = 20, fontface = "bold") +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+Now, use [claude.ai](claude.ai) or a favorite genAI tool of your choice to answer the following questions.
+Make sure to use an online chat tool (not claude code) 
+and start a new session / chat with the tool as you will have to share the log at the end.
+Also make sure not to put anything personal (or incriminating :D) in the chat!
+
+1. What does aes do?
+2. how are data, geoms, and aesthetics related in ggplot?
+3. What does `fill = factor(test, levels = names(colors))` do? 
+4. What is a 'factor', and why are the test outcomes converted to a factor here?
+5. What does `scale_fill_manual` do? 
+6. How do scales relate to data, geoms and aesthetics?
+6. What is the difference between an `annotate` and a `geom`?
+7. What would you need to change to make fail red, and pass blue?
+
+For each question, don't copy paste the AIs answer: 
+write it in your own words, and make sure you fully understand the answer.
+You can ask additional clarification questions as needed. 
+Limit your answer to one or two sentences for each question. 
+
+### Chat log
+
+Paste a link to your chat log here: ...
+
+(use the 'share' icon on the conversation in Claude or your AI tool)
+
+### Reflection (1 paragraph)
+
+How useful was the AI in understanding complex code?
+What questions were most useful in understanding the R code? 
+How can you use AI in a good way to help learn R?
+
+## Submitting this assignment
+
+To submit the assignment, **Render** it to a word document, download it, and submit it on canvas. 
+Alternatively, you can print the html report as a pdf and submit that, or install latex on your computer and knit directly to pdf. 
