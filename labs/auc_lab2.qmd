@@ -18,18 +18,18 @@ The goal is to see whether Biden was more successful in larger states.
 
 ## Getting data
 
-First, let's download the data from [MIT election lab](https://electionlab.mit.edu/data)'s [Dataverse page](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/42MVDX):
+First, let's download the data from [MIT election lab](https://electionlab.mit.edu/data)'s [Dataverse page](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/42MVDX).
+Note that the dataverse requires you to sign their guest book before downloading, 
+I make a copy that can be downloaded directly 
+(which is allowed since it's CC-0):
 
 ```{r data}
-# install.packages("dataverse")   # if needed)
-library(dataverse)
-elections = get_dataframe_by_name(
-  filename = "1976-2020-president.tab",
-  dataset = "doi:10.7910/DVN/42MVDX", 
-  server = "dataverse.harvard.edu")
-elections
+library(tidyverse)
+elections <- read_csv("https://raw.githubusercontent.com/vanatteveldt/auc_labs/refs/heads/main/data/1976-2024-president.csv")
+head(elections)
 ```
 
+As you can see, this has a lot of columns that we don't need. 
 Use `select` to select only the `year`, `state`, `state_po`, `party_simplified`, `candidatevotes`, `totalvotes` columns.
 Rename `party_simplified` to `party`
 
@@ -43,7 +43,6 @@ Now, filter the data for the year 2020 and the democratic party:
 ```{r filter}
 # Insert your code here
 ```
-
 
 To check, display (the top rows of) the data set:
 
@@ -59,6 +58,8 @@ Now, use `mutate` to compute the percentage of total votes that Biden (the democ
 # Insert your code here
 ```
 
+(As a bonus, you can use `str_to_title` to normalize the capitalization in the party and candidate names)
+
 ## Exploring total results
 
 Using `arrange` and `head` and/or `tail`, show the states where Biden had the largest and smallest vote share (percentage):
@@ -71,7 +72,10 @@ Using `arrange` and `head` and/or `tail`, show the states where Biden had the la
 
 ## Statistical analysis
 
-Now, using `cor.test`, see if there is a correlation between total number of votes and Bidens's vote share. Interpret the result briefly (1 or 2 sentences)
+Now, using `cor.test`, see if there is a correlation between total number of votes and Bidens's vote share. 
+Note that `cor.test` is not part of the tidyverse, so it uses the `dataset$column` notation to select the two columns. 
+
+Interpret the result briefly (1 or 2 sentences). What does `totalvotes` actually proxy for in this analysis?
 
 ```{r correlation}
 # Insert your code here
@@ -79,3 +83,8 @@ Now, using `cor.test`, see if there is a correlation between total number of vot
 
 [your interpretation]
 
+## Bonus
+
+As a bonus, can you recreate the graph from the assignment page on canvas? 
+If you use AI, make sure that you understand what the code you get actually does!
+If needed, ask AI what each line does, why it made certain choices, and play with the code yourself. 
