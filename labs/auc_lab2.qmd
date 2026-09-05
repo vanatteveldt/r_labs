@@ -1,0 +1,81 @@
+---
+title: 'Lab 2: exploring the US elections'
+author: "(Your name)"
+format: docx
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+*Note: The chunks below are not complete, you will need to fill in the blanks and knit to an output document to finish the lab!*
+
+# Exploring the primaries
+
+In this lab we will explore the 2020 US presidentials elections.
+The goal is to see whether Biden was more successful in larger states. 
+
+## Getting data
+
+First, let's download the data from [MIT election lab](https://electionlab.mit.edu/data)'s [Dataverse page](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/42MVDX):
+
+```{r data}
+# install.packages("dataverse")   # if needed)
+library(dataverse)
+elections = get_dataframe_by_name(
+  filename = "1976-2020-president.tab",
+  dataset = "doi:10.7910/DVN/42MVDX", 
+  server = "dataverse.harvard.edu")
+elections
+```
+
+Use `select` to select only the `year`, `state`, `state_po`, `party_simplified`, `candidatevotes`, `totalvotes` columns.
+Rename `party_simplified` to `party`
+
+```{r clean}
+# Insert your code here
+elections = ...
+```
+
+Now, filter the data for the year 2020 and the democratic party:
+
+```{r filter}
+# Insert your code here
+```
+
+
+To check, display (the top rows of) the data set:
+
+```{r check}
+head(elections)
+```
+
+## Computing values
+
+Now, use `mutate` to compute the percentage of total votes that Biden (the democratic candidate) received:
+
+```{r compute totals}
+# Insert your code here
+```
+
+## Exploring total results
+
+Using `arrange` and `head` and/or `tail`, show the states where Biden had the largest and smallest vote share (percentage):
+
+```{r exploration}
+# Insert your code here
+```
+
+[your interpretation]
+
+## Statistical analysis
+
+Now, using `cor.test`, see if there is a correlation between total number of votes and Bidens's vote share. Interpret the result briefly (1 or 2 sentences)
+
+```{r correlation}
+# Insert your code here
+```
+
+[your interpretation]
+
