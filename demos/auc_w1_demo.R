@@ -1,6 +1,29 @@
 library(tidyverse)
 votes <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r4css/refs/heads/main/data/dutch_elections_2023.csv")
 glimpse(votes)
+head(votes)
+
+filter(votes, municipality == "Amsterdam") |>
+  arrange(desc(votes))
+
+
+votes_pvda <- filter(party == "PvdA/GL") |>
+  arrange(desc(votes))
+
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Simple filter / sort / select
 votes |>
