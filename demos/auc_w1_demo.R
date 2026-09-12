@@ -31,7 +31,7 @@ votes |>
   filter(town == "Amsterdam") |>
   arrange(desc(votes))
 
-# Note: changes have been saved to memory!
+# Note: changes have not been saved to memory!
 
 # Simple join
 demographics <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r4css/refs/heads/main/data/dutch_demographics.csv")

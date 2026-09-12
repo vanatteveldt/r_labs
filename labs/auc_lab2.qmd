@@ -13,7 +13,7 @@ editor_options:
 
 # Exploring the primaries
 
-In this lab we will explore the 2020 US presidentials elections.
+In this lab we will explore the 2020 US presidential elections.
 The goal is to see whether Biden was more successful in larger states. 
 
 ## Getting data
@@ -54,11 +54,11 @@ head(elections)
 
 Now, use `mutate` to compute the percentage of total votes that Biden (the democratic candidate) received:
 
-```{r compute totals}
+```{r compute-totals}
 # Insert your code here
 ```
 
-(As a bonus, you can use `str_to_title` to normalize the capitalization in the party and candidate names)
+(As a bonus, you can use `str_to_title` to normalize the capitalization in the party names)
 
 ## Exploring total results
 
@@ -72,7 +72,7 @@ Using `arrange` and `head` and/or `tail`, show the states where Biden had the la
 
 ## Statistical analysis
 
-Now, using `cor.test`, see if there is a correlation between total number of votes and Bidens's vote share. 
+Now, using `cor.test`, see if there is a correlation between total number of votes and Biden's vote share. 
 Note that `cor.test` is not part of the tidyverse, so it uses the `dataset$column` notation to select the two columns. 
 
 Interpret the result briefly (1 or 2 sentences). What does `totalvotes` actually proxy for in this analysis?
