@@ -104,3 +104,47 @@ demographics <- simple |>
 # demographics <- mutate(demographics, fips = as.integer(fips))
 
 write_csv(demographics, "data/US_Demographics.csv")
+
+## ---------------------------------------------------------------------------
+## 5. County-level presidential returns: collapse the voting-mode breakdown
+## ---------------------------------------------------------------------------
+## The raw MIT Election Lab county file (data/countypres_2000-2024.csv) can
+## report a county's votes several times over, split by voting `mode`
+## (e.g. "ELECTION DAY", "ABSENTEE", "PROVISIONAL", ...), in addition to (or
+## instead of) a single overall figure. Which of these a given county/year
+## reports is inconsistent:
+##   - 2000-2016: only ever a single "TOTAL" row per candidate.
+##   - 2020/2024, most counties: a "TOTAL" row (or, in some states, a single
+##     row with mode = NA) *plus* the mode breakdown that sums to it.
+##   - 2020/2024, a substantial minority of counties (e.g. many in AR, NC,
+##     TX, MO, ...): *only* the mode breakdown, no "TOTAL"/NA row at all.
+##   - North Carolina 2024 specifically: *several* NA-mode rows per
+##     candidate that are themselves partial sub-totals needing summation,
+##     not a single canonical total.
+## Naively filtering to mode == "TOTAL" therefore drops hundreds of
+## counties outright, and naively summing every row double-counts the
+## (more common) counties that report both a total and its breakdown.
+## Instead, for each candidate/party/county/year we prefer the "TOTAL"
+## row(s) if present, else the NA-mode row(s), else sum the full breakdown --
+## summing within the chosen group also handles the rare cases where a
+## county reports more than one row for its preferred mode.
+countypres_raw <- read_csv("data/countypres_2000-2024.csv", show_col_types = FALSE)
+
+countypres <- countypres_raw |>
+  mutate(mode_group = case_when(
+    mode == "TOTAL" ~ "total",
+    is.na(mode)     ~ "na",
+    .default        = "breakdown"
+  )) |>
+  summarise(
+    candidatevotes = case_when(
+      "total" %in% mode_group ~ sum(candidatevotes[mode_group == "total"]),
+      "na"    %in% mode_group ~ sum(candidatevotes[mode_group == "na"]),
+      .default                 = sum(candidatevotes[mode_group == "breakdown"])
+    ),
+    totalvotes = first(totalvotes),
+    version    = first(version),
+    .by = c(state, county_name, year, state_po, county_fips, office, candidate, party)
+  )
+
+write_csv(countypres, "data/countypres_2000-2024_clean.csv")
