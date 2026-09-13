@@ -16,10 +16,6 @@ library(tidycensus)
 library(tidyverse)
 acs_year <- 2024   # = the 2020-2024 5-year file, released 2026-01-29
 
-## ---------------------------------------------------------------------------
-## 1. Single-variable measures
-## ---------------------------------------------------------------------------
-
 census_api_key("8876955420b1939ae49b2817241e40314a09b4e5", install=T)
 readRenviron("~/.Renviron")
 simple <- get_acs(
@@ -39,7 +35,7 @@ simple <- get_acs(
   rename_with(\(x) str_remove(x, "E$"), .cols = -c(GEOID, NAME))
 
 ## ---------------------------------------------------------------------------
-## 2. Age groups: sum the relevant brackets of B01001 (sex by age)
+## Age groups: sum the relevant brackets of B01001 (sex by age)
 ## ---------------------------------------------------------------------------
 ## male   under 30 = _003 .. _011,  65+ = _020 .. _025
 ## female under 30 = _027 .. _035,  65+ = _044 .. _049
@@ -55,7 +51,7 @@ age <- get_acs(geography = "county", table = "B01001",
   pivot_wider(names_from = group, values_from = n)
 
 ## ---------------------------------------------------------------------------
-## 3. Education: B15003 is educational attainment for the population 25+
+## Education: B15003 is educational attainment for the population 25+
 ## ---------------------------------------------------------------------------
 ## _001 = total 25+;  _022 .. _025 = bachelor's, master's, professional, doctorate
 
@@ -67,7 +63,7 @@ edu <- get_acs(geography = "county", table = "B15003",
   pivot_wider(names_from = group, values_from = n)
 
 ## ---------------------------------------------------------------------------
-## 4. Combine and compute the derived columns
+## Combine and compute the derived columns
 ## ---------------------------------------------------------------------------
 
 ## Suffixes to strip so "Autauga County" becomes "Autauga".
@@ -106,7 +102,8 @@ demographics <- simple |>
 write_csv(demographics, "data/US_Demographics.csv")
 
 ## ---------------------------------------------------------------------------
-## 5. County-level presidential returns: collapse the voting-mode breakdown
+## countypres_2000-2024_clean.csv
+## County-level presidential returns: collapse the voting-mode breakdown
 ## ---------------------------------------------------------------------------
 ## The raw MIT Election Lab county file (data/countypres_2000-2024.csv) can
 ## report a county's votes several times over, split by voting `mode`
@@ -148,3 +145,6 @@ countypres <- countypres_raw |>
   )
 
 write_csv(countypres, "data/countypres_2000-2024_clean.csv")
+
+
+countypres |> filter(is.na(party))
