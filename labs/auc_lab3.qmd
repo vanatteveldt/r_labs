@@ -1,0 +1,117 @@
+---
+title: 'Lab 3: Visualizing US politics'
+author: "(Your name)"
+format: docx
+execute:
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+# Introduction
+
+The goal of this lab is to demonstrate your understanding of basic ggplot plots. 
+For the first plots, don't worry about layout, themes, labels etc. -- just create the right graph. 
+This is generally what you do during your own analysis/exploration phase.
+In the last part you are asked to make one graph suitable for publication/presentation,
+i.e. with a nice theme, good labels, good scales, etc.
+
+# Data: US per-county Presidential election results
+
+# Line graph: Changes over time
+
+Changes over time are most often depicted as a line graph, e.g. using `geom_line()`. 
+Consider this data set of county-level US election results over time,
+obtained again from the [MIT election lab](https://electionlab.mit.edu/data): 
+
+```{r}
+library(tidyverse)
+results_per_county <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r_labs/main/data/countypres_2000-2024_clean.csv")
+```
+
+Compute a new data set, 'results_per_year', that computes the overall vote share per party per year.
+Hint: you can first summarize the total candidatevotes grouped by party x year, and then divide by total candidatevotes per year. 
+
+```{r}
+# Add your data processing code here:
+# results_per_year <- ...
+```
+
+Create a line graph to show the result of the parties over time, giving each party it's own line (in a different color). 
+
+```{r}
+# insert your code here
+```
+
+Bonus challenges:
+
+- Can you change the color so the republicans (red) and democrats (blue) are shown in their traditional colors?
+- Do all data years look OK? Is 2024 plausible? Can you find out what's wrong by filtering and inspecting the original and/or aggregated data set?
+- If you look at the data, you can see that the smaller parties don't actually have data for each year. By default, ggplot just draws a line between the known points, but in this instance we should probably assume that party had zero votes. Can you use the `complete` function to make sure they are displayed as zeroes?
+
+# Bar plots
+
+Using the `results_per_county` data above, 
+create a bar plot of how many county each party won in 2024.
+
+(Hint: first filter on year, then compute the winner for each county using `group_by` and `slice_max`; then use `geom_col` to create the bar plot)
+
+```{r}
+# insert your code here
+```
+
+Bonus challenges: 
+- Can you color by party, make the parties properly capitalized, and remove the axis labels and add a descriptive title?
+- Substantively, where did the smaller parties go? Are there NA results? Why?
+- Is there a difference between grouping by county_name and county_fips? Why?
+
+# Scatter plot: Relation between variables
+
+Relationships between unordered numerical variables are often shown in a scatter plot. 
+
+## Data
+
+The following code creates a combined data set of Trump vote share and selected demographics per county. 
+This data is obtained from the [Census Bureau Data API](https://api.census.gov) but this usage is not endorsed or certified by the Census Bureau.
+
+Note: we will discuss the `inner_join` and other join commands next week, but you can peak ahead in [R4CSS chapter 7](https://r4css.vanatteveldt.com/chapters/07-reshaping.html#joining-multiple-data-sets-using-_join)) if you are curious!)
+
+```{r}
+# (note: you don't need to change any code here since we didn't discuss joins yet)
+demographics <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r_labs/main/data/US_Demographics.csv")
+
+trump_predictors <- results_per_county |>
+  filter(party == "REPUBLICAN", year == 2024) |>
+  group_by(county_fips) |> 
+  mutate(trump_voteshare=candidatevotes/totalvotes,
+         fips=sprintf("%05d", county_fips)) |>
+  ungroup() |>
+  select(fips, trump_voteshare) |>
+  left_join(demographics, join_by(fips)) 
+head(trump_predictors)
+```
+
+Bonus challenges: 
+- Did the `left_join` drop any counties? Why?
+- What does the sprintf command do, and why was it needed?
+
+## Explaning Trump's vote share
+
+Choose at least two variables that you think might predict or correlate with Trump's vote share. 
+Create a scatter plot (using `geom_point`) to show this relation, with the vote share on the Y axis, one of the demographics on the x-axis, and the other demographics using a different aesthetic (e.g. `color` or `size`). 
+
+```{r}
+# insert your code here
+```
+
+# Make it beautiful
+
+Finally, take the last plot and make it suitable for publication. 
+This means that it should be pleasing to look at, with no badly chosen colors or scales and no technical terms or distracting artefacts. 
+Moreover, it means that it should be self-explanatory: any interested reader should be able to read the story from just looking at the graph. 
+
+This generally means at least adding an overall title (describing the main relation expressed in the graph), decent labels for the x and y axes, and decent names for other variables or legends. You could also consider changing the axis display, adding a subtitle, changing the color scheme, etc. Finally, feel free to apply or customize any theme that you think makes it look better.
+
+```{r}
+# insert your code here
+```
