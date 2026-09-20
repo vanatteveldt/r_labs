@@ -1,0 +1,138 @@
+---
+title: "Mini-opdracht 2: CBS data"
+author: "Jullie namen"
+editor_options: 
+  chunk_output_type: console
+format: docx
+execute:
+  warning: false
+---
+
+## Inleiding
+
+Het doel van deze opdracht is om te oefenen met het ophalen en opschonen van gegevens van het CBS.
+
+## Gegevens
+
+Exporteer en download de bevolkingssamenstelling per provincie in Nederland van de afgelopen 30 jaar:
+
+* Ga hiervoor naar [CBS Statline](https://opendata.cbs.nl/statline/#/CBS/nl/), en kies Thema's, Nederland regionaal, Kerncijfers per regio, Regionale kerncijfers Nederland.
+* Klik op het filter voor onderwerpen. Je ziet hier een taxonomie (hiërarchische lijst) van onderwerpen met daaronder meer gedetailleerde onderwerpen. Als een onderwerp **vetgedrukt** is dan zijn er nog meer onderwerpen eronder, die je kan zien door op het onderwerp te klikken. Bij de meeste gedetailleerde onderwerpen staat ook het meetniveau, bijvoorbeeld 'aantal' of 'percentage'. 
+* Een aantal onderwerpen is standaard geselecteerd: Een blauw vinkje naast een onderwerp betekent dat dat hele onderwerp (inclusief eventuele onderliggende onderwerpen) wordt meegenomen. Een blauw vakje betekent dat sommige (maar niet alle) van de onderliggende onderwerpen zijn geselecteerd. 
+
+Maak nu de juiste selectie voor de tabel en exporteer deze. 
+
+1. Deselecteer alle onderwerpen (druk twee keer op het blauwe vak naast 'Onderwerp') en selecteer bij Bevolking, Bevolkingssamenstelling op 1 januari, Leeftijd, Leeftijdsgroepen. Er staat dan als het goed is een blauw vinkje naast leeftijdsgroepen, en een blauw vakje bij de bovenliggende onderwerpen, en verder is niets geselecteerd.
+2. Open het filter voor Regio's. Deselecteer alles, en selecteer de provincies.
+3. Open het filter voor Perioden, en selecteer alle jaren. 
+4. Je ziet nu een tabel met per kolom een leeftijdscategorie, en per rij een provincie en jaartal.
+5. Exporteer deze gegevens door rechtsboven op de blauwe knop voor 'Download' te klikken Kies daar "CSV zonder statistische symbolen"
+6. Zet het bestand in je RStudio projectmap. Als het goed is verschijnt het ook in de 'Files' rechtsonder in RStudio. 
+
+## Inladen en opschonen
+
+Laad de gegevens in en hernoem de kolom `Perioden` naar `jaar` en ```Regio's``` naar `provincie`:
+
+```{r}
+library(tidyverse)
+pop <- read_csv2("...") |>
+  rename(jaar=Perioden, provincie=`Regio's`)
+head(pop)
+```
+
+Zet de kolommen in de rijen met `pivot_longer`; zet de namen in een kolom `leeftijd` en de waarden in `bevolking`:
+
+```{r}
+# Omzetten van kolommen in rijen
+# pop <- pivot_longer(...)
+# head(pop)
+```
+
+Verwijder het achtervoegsel ` (PV)` van de provincienamen, en het voorvoegsel `Bevolking/..../Leeftijdsgroepen/` van de leeftijdscategorie: (Tip: haakjes hebben een speciale betekenis als patroon, dus zet er twee backslashes voor!)
+
+```{r}
+# Opschonen van tekstuele gegevens: provincie, leeftijd
+# pop <- ...
+# head(pop)
+```
+
+Zet het jaartal om van een getal naar een datum door er eerst (met `str_c`) een  maand en dag (`-01-01`) aan vast te plakken, en vervolgens met `ymd` om te zetten naar een datumkolom:
+
+```{r}
+# Omzetten van jaar naar een R datumtype
+# pop <- ...
+# head(pop)
+```
+
+Deel nu de provincies in in twee of drie groepen (bijvoorbeeld noord, midden, zuid; of randstad vs de rest). 
+Gebruik hiervoor `recode_values``:
+
+```{r}
+# Indelen van provincies
+# pop <- ...
+# head(pop)
+```
+
+Deel nu op dezelfde manier de leeftijd in in twee groepen (bv tot 25 vs ouder, of 65+ vs jonger):
+
+```{r}
+# Hercodering van leeftijd
+# pop <- ...
+# head(pop)
+```
+
+## Samenvatten van gegevens
+
+Bereken het percentage inwoners per leeftijdscategorie, per landsdeel, en per jaar. 
+Bereken hiervoor eerst het totaal aantal inwoners per groep (met `group_by` en `summarise`).
+Bereken daarna het percentage door te groeperen op landsdeel en jaar, en dan met mutate
+het aantal te delen door de som:
+
+```{r}
+# Samenvatten van gegevens
+# pop <- ...
+# head(pop)
+```
+
+## Visualisatie
+
+Maak een lijngrafiek van de ontwikkeling van een van de categorieën (bv jong) 
+per landsdeel over tijd. 
+
+```{r}
+# Visualisatie met ggplot
+```
+
+## Onderzoeksvraag voor opdracht 2
+
+Volgende week gaan jullie een relatief zelfstandig onderzoek(je) doen met gebruikmaking van CBS gegevens.
+Doel is om het verband te onderzoeken tussen een sociologisch relevant gegeven 
+(zoals gezondheid en sport, misdaad, of woningnood) en demografische achtergrondkenmerken.
+Je kan bijvoorbeeld kijken naar het verband tussen etnische samenstelling en gezondheid, 
+inkomen en misdaad, gemeentegrootte en woningbezit, et cetera. 
+
+Hiervoor zullen jullie leren de API te gebruiken (in plaats van het 'handmatig' te downloaden), 
+maar het is belangrijk om eerst goed te weten welke gegevens je nodig hebt.
+
+Kijk hiervoor in statline naar [Nederland regionaal](https://opendata.cbs.nl/statline/#/CBS/nl/navigatieScherm/thema?themaNr=4440). Hierin zie je een groot aantal onderwerpen waar per gemeente (of andere regio) gegevens van bekend zijn. 
+Zoek in deze onderwerpen naar twee variabelen waartussen een interessant verband zou kunnen zijn.
+
+Deze gegevens moeten aan drie eisen voldoen:
+- Het verband moet sociologisch gezien plausibel en relevant zijn,
+- De gegevens moeten uit twee verschillende tabellen komen (bijvoorbeeld de kerncijfers en een andere tabel)
+- De gegevens moeten combineerbaar zijn, dat wil zeggen dat ze voor dezelfde (of overlappende) regio's en jaren in CBS staan. 
+
+Schrijf hieronder een kort voorstel:
+
+```
+Onderzoeksvraag: (1 zin, sjabloon: Hebben gemeentes met meer X ook meer Y?)
+Uitleg relevantie: (1 of 2 zinnen, haal eventueel theorie aan uit eerdere of andere vakken)
+Gegevensbronnen:
+- Variabele X: Link naar tabel (bv https://opendata.cbs.nl/statline/#/CBS/nl/dataset/70072ned/table?ts=1724224277475) en naam van het relevante onderwerp. Wat is dit voor soort gegeven (totaal aantal, percentage, euro's), (hoe) moet dat eventueel nog bewerkt worden?
+- Variabele Y: Link naar tabel en naam van het relevante onderwerp. Wat is dit voor soort gegeven (totaal aantal, percentage, euro's), (hoe) moet dat eventueel nog bewerkt worden?
+```
+
+
+
+
+
