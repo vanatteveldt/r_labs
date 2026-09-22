@@ -1,0 +1,155 @@
+---
+title: "Lab 4: Changing times"
+author: "Your name(s)"
+editor_options: 
+  chunk_output_type: console
+format: pdf
+execute:
+  warning: false
+---
+
+The goal of this week's lab is to predict/explain the *change* in votes in the US Presidential elections.
+In other words: which counties did Trump do better or worse in in 2024 compared to 2020?
+
+For this, we get the election outcome data (at the county level) in 2020 and 2024,
+combine that with an interesting demographic at the county level,
+and correlate (or regress) whether that demographic explains the changing (democratic or republican) vote share.
+
+(Note that I've set format to pdf by default for this template, you might need to run `tinytex::install_tinytex()` or you can also just switch back to docx)
+
+# Obtaining the needed data
+
+## Election data
+
+We get the election data results from the [MIT Election Lab](https://electionlab.mit.edu/data)'s county-level presidential returns. This used to be easiest to obtain straight from the [Harvard Dataverse](https://dataverse.harvard.edu/file.xhtml?fileId=4788675&version=9.0) via the `dataverse` package, but Dataverse now requires signing a guestbook before downloading, which their API doesn't support -- so instead we read a copy of the raw file straight from GitHub:
+
+```{r}
+library(tidyverse)
+raw_data <- read_csv("https://raw.githubusercontent.com/vanatteveldt/r_labs/main/data/countypres_2000-2024.csv")
+```
+
+Let's filter the data down to the years 2020 and 2024 and keep only a subset of columns:
+
+```{r}
+cleaned <- raw_data |> 
+  filter(year == 2020 | year == 2024) |>
+  select(fips=county_fips, state=state_po, county=county_name, year, mode, candidate, party, votes=candidatevotes)
+head(cleaned)
+```
+
+## Fixing noisy data
+
+You might have noticed the `mode` column in the data. 
+Which values does this column take for each year?
+Count the number of rows per mode per year, either using `table`
+or using `group_by |> summarize`:
+
+```{r diagnose}
+# Insert your code here
+```
+
+How should we clean this data to only have the total number of votes
+per candidate per county? Do all counties have a total?
+If not, can we compute it?
+
+```{r fix}
+# Insert your code here
+```
+
+Note: This is deliberately left as an open challenge - to completely fix this data will take quite a bit of detective work. To pass the lab, it's enough to show that you understand the scope of the problem and a start towards fixing it. 
+
+## Compute vote share
+
+Next, let's compute the vote share by first computing the total votes per county from the individual counts. 
+First, compute the total votes per county, and then divide the individual votes by this total. 
+
+```{r voteshare}
+# Code to compute the total sum of votes for both major parties 
+# voteshares <- ...
+# head(voteshares)
+
+```
+
+## Computing the vote shift using join
+
+Now, we are ready to compute the shift in vote for Trump between 2024 and 2020. This is made more difficult because these values are in rows rather than columns.
+We can achieve this by creating separate data frames for 2020 and 2024 and joining them together. 
+
+Compute shifts in vote share by:
+
+1. Filtering on only Trump (or only Republicans) and drop the party and candidate columns
+2. Creating separate data frames for 2020 and 2024, drop the year column and rename the voteshare column to voteshare_2020 and voteshare_2024
+3. Joining these data frames back together. This should join only on county_fips, name and state, and result in a new data frame with the 2020 and 2024 values next to each other.
+4. Computing the shift by subtract the 2020 vote share from the 2024 value.
+5. Arrange the results by descending shift, i.e. the county with the largest shifts towards trump first.
+
+```{r join}
+# Code to compute shift in vote share
+# voteshare_2020 <- ...
+# voteshare_2024 <- ...
+# voteshifts <- ...
+# head(voteshifts, n=10)
+```
+
+Do these results make sense? Anything odd?
+
+## Computing the vote shift using pivot
+
+An alternative way of computing the vote shift is to use the `pivot_wider` command. 
+
+1. Filtering on only Trump (or only Republicans) and drop the party and candidate columns
+2. Pivot to a wide frame, using year for the names, and voteshare for the values
+3. Compute the vote shift as before. Note that since object names in R cannot start with a number, you might need to `rename` the year columns or use backticks (e.g. `` `2024` ``)
+
+```{r pivot}
+# Code to compute shift in vote share
+# voteshifts <- voteshares |>
+#    filter() |>
+#    select() |>
+#    pivot_wider() |>
+#    mutate() |>
+#    arrange()
+# head(voteshifts, n=10)
+```
+
+Are the results the same as above?
+
+## Bonus challenge
+
+If you're feeling nerdy, can you use `arrange`, `first` and `last` to calculate the vote shift without using either pivot or join?
+
+# County-level demographics
+
+Now, we're ready to analyse predictors of the 2020-2024 vote shift. 
+First, download the county-level facts from 2016:
+
+```{r}
+url = "https://raw.githubusercontent.com/houstondatavis/data-jam-august-2016/master/csv/county_facts.csv"
+facts = read_csv(url)
+```
+
+(Of course, you can also find other relevant data on the web, 
+as long as it's county-level data and relevant for understanding political choices. )
+
+## Combining the data
+
+Now, select one or more columns from the county facts that you think might be relevant, such as education level, age, or ethnic composition. Select only the fips and that column or those columns from the facts data frame, and join it to the vote shifts:
+
+```{r}
+# selected_facts <- ...
+# combined <- ...
+# head(combined)
+```
+
+# Analysis
+
+```{r}
+# Code to do correlation/regression analysis of chosen variable
+# For imaginary bonus points, add a visualization (scatter plot, map plot) 
+#   of the relevant variables
+
+```
+
+## Interpretation
+
+From these results, we can see .... This means ... 
