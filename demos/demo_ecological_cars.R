@@ -2,15 +2,17 @@ library(tidyverse)
 library(cbsodataR)
 
 # Autobezit in nederland: 81845NED
-auto_data <- cbs_get_data("81845NED",
-                          Perioden = "2015JJ00",
-                          AantalVoertuigenInHuishouden = "40000")   # min. 1 voertuig
-
-# De metadata bevat per dimensie een tabel met Key (code) en Title (label)
 auto_meta <- cbs_get_meta("81845NED")
 huishoudkenmerken <- auto_meta$Huishoudkenmerken |>
   select(Key, kenmerk = Title) |>
   mutate(Key = str_trim(Key))
+
+auto_meta$AantalVoertuigenInHuishouden |> as_tibble()
+
+auto_data <- cbs_get_data("81845NED",
+                          Perioden = "2015JJ00",
+                          AantalVoertuigenInHuishouden = "40000")   # min. 1 voertuig
+
 
 auto_data |>
   mutate(Huishoudkenmerken = str_trim(Huishoudkenmerken)) |>
@@ -34,11 +36,12 @@ wijk_meta <- cbs_get_meta("85618NED")$WijkenEnBuurten |>
 wijken <- cbs_get_data("85618NED", WijkenEnBuurten = has_substring("WK")) |>
   mutate(WijkenEnBuurten = str_trim(WijkenEnBuurten)) |>
   inner_join(wijk_meta, by = c("WijkenEnBuurten" = "Key")) |>
-  transmute(wijk     = wijk_naam,
-            gemeente = str_trim(pick(matches("^Gemeentenaam"))[[1]]),
-            autos    = pick(matches("^PersonenautosPerHuishouden"))[[1]],
-            inkomen  = pick(matches("^GemiddeldInkomenPerInwoner"))[[1]]) |>
-  drop_na(autos, inkomen)
+  mutate(wijk     = wijk_naam,
+         gemeente = str_trim(Gemeentenaam_1),
+         autos    = PersonenautoSPerHuishouden_112,
+         inkomen  = GemiddeldInkomenPerInwoner_81) |>
+  filter(!is.na(autos), !is.na(inkomen)) |>
+  select(wijk, gemeente, autos, inkomen) 
 
 cor.test(wijken$autos, wijken$inkomen) 
 ams <- filter(wijken, gemeente == "Amsterdam")
