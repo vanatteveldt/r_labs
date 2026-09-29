@@ -33,11 +33,11 @@ Trump was famous for using nicknames like Sleepy Joe and Crooked Hillary for his
 First, let's make a cleaned version of the data set by filtering out all posts he retweeted (`isRetweet == TRUE`), converting text to lower case with `str_to_lower` and normalizing whitespace with `str_squish`.  Store this as a separate data frame. 
 
 Then:
-1. Using `str_detect`, create a column for each nickname, 1 if mentioned, 0 if not (hint: as.numeric turns TRUE/FALSE into 1/0)
-2. Using `floor_date`, create a column for the month
-3. Using `summarize`, aggregate the sum of each nickname per month
-4. Using `pivot_longer`, turn this into a long data frame
-5. Using `ggplot`, create a line graph of each nickname over time
+1. Using `str_detect`, create a column for each nickname, 1 if mentioned, 0 if not (hint: as.numeric turns `TRUE`/`FALSE` into `1`/`0`).
+2. Using `floor_date`, create a column for the month.
+3. Using `summarize`, aggregate the sum of each nickname per month.
+4. Using `pivot_longer`, turn this into a long data frame.
+5. Using `ggplot`, create a line graph of each nickname over time.
 
 ```{r}
 ```
@@ -50,7 +50,7 @@ Using the cleaned dataset from above:
 1. Use `str_extract` to extract the first nickname used to a new variable (hint: `cat|dog` extracts cat OR dog)
 2. Filter to keep only tweets with a nickname
 3. Calculate engagement as a sum of `favorites` and `retweets`
-4. Make a scatter plot of invidivual tweets, showing engagement on the y axis, time on the x axis, and use color for the use of a nickname. 
+4. Make a scatter plot of individual tweets, showing engagement on the y axis, time on the x axis, and use color for the use of a nickname. 
 
 For bonus points:
 - Add a layer of grey dots below the nickname dots representing tweets without a nickname
@@ -73,27 +73,24 @@ Trump is often accused of applying the label `fake news` to news organizations. 
 3. Make a table of how often each at-mention occurs, showing the top-10.
 
 ```{r}
-tweets |> filter(str_detect(str_to_lower(text), "fake")) |>
-  mutate(at=str_extract(text, "@\\w+")) |>
-  count(at) |> 
-  arrange(-n)
-  head(10)
 ```
 
 Do the results make sense? In the posts mentioning Fox, are they actually called fake, or is it contrasting them?
 
 For bonus points: 
-- use `str_extract_all` and `unnest_longer` instead of `str_exact`. How does it change your results?
+- use `str_extract_all` and `unnest_longer` instead of `str_extract`. How does it change your results?
 - contrast the mention within 'fake news' tweets to the overall mentions
 
 ## Making a word plot
 
 Word clouds are overused and (deservedly) much maligned. But let's make a word plot anyway!
 
-1. Extract all hash tags using `str_extract_all` and `unnest_longer`
-2. For each hash tag, compute overall use and median date of use
-3. Using the `geom_text_repel` from the `ggrepel` package, plot the top-50 words.
-   Use a random y axis, the date on the x axis, and the frequency as the size
+Starting again from the cleaned data:
+
+1. Extract all hash tags using `str_extract_all` and `unnest_longer`.
+2. For each hash tag, compute overall use and median date of use.
+3. Using the `geom_text_repel` from the `ggrepel` package, plot the top-50 tags
+   Use a random y axis, the date on the x axis, and the frequency as the size.
 
 ```{r}
 ```
@@ -102,14 +99,20 @@ Word clouds are overused and (deservedly) much maligned. But let's make a word p
 
 Trump is often said to tweet with many negative emotions,
 and interestingly this is [said to vary by device](http://varianceexplained.org/r/trump-tweets/): 
-He personally types tweets on his Android, while his aides use an iPhone. 
+He personally types tweets on his Android, while his aides use an iPhone.
 
-Can we use stringr to do a simple sentiment analysis per device?
+(Note that the article uses the old twitter API, which is now defunct;
+it also uses `tidytext`, which we will introduce after the break. 
+So, use it for inspiration more than for the code)
 
-1. Make a simple pattern to detect anger (or other negative emotions). Don't overthink it, even just `stupid|angry` is fine;
-   you can also one of the many existing lists of negative emotions you can find online
-2. Count in what percentage of tweets an angry emotion is present, grouped by device
-3. Make a barplot of the result
+Can we use stringr to do a simple sentiment analysis per device? Starting again from the cleaned data:
+
+1. Make a simple pattern to detect anger (or other negative emotions). Don't overthink it: even just `stupid|angry` is fine;
+   you can use the NRC lexicon mentioned in the article, 
+   or one of the many existing lists of negative emotions you can find online.
+2. Filter out all results after March 2017.
+3. Count in what percentage of tweets an angry emotion is present, grouped by device.
+4. Make a barplot of the result.
 
 ```{r}
 ```
