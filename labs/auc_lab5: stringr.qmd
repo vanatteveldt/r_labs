@@ -30,7 +30,8 @@ head(tweets)
 
 Trump was famous for using nicknames like Sleepy Joe and Crooked Hillary for his opponents. 
 
-First, let's make a cleaned version of the data set by filtering out all posts he retweeted (`isRetweet == TRUE`), converting text to lower case with `str_to_lower` and normalizing whitespace with `str_squish`.  Store this as a separate data frame. 
+First, let's make a cleaned version of the data set by filtering out all posts he retweeted (`isRetweet == FALSE` or just `!isRetweet`),
+converting text to lower case with `str_to_lower` and normalizing whitespace with `str_squish`.  Store this as a separate data frame. 
 
 Then:
 1. Using `str_detect`, create a column for each nickname, 1 if mentioned, 0 if not (hint: as.numeric turns `TRUE`/`FALSE` into `1`/`0`).
