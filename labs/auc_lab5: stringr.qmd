@@ -43,6 +43,11 @@ Then:
 ```{r}
 ```
 
+(Note: you could also do `pivot_longer` before `summarize` -- which is easier? 
+In fact you could skip the `pivot_longer` altogether as well, what is the benefit of pivotting for this exercise?
+Would that answer change if you had 20 nicknames instead of 2? 
+)
+
 ## Nicknames and engagement
 
 Does the use of nicknames produce higher engagement? 
