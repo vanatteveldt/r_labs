@@ -128,7 +128,7 @@ Wat vind je van het antwoord? Kan je de redenering volgen? Lijkt het fair?
 
 NB: Soms geeft GPT als antwoord dat hij geen oordeel kan/mag vellen. Pas dan de prompt en/of beschrijvingen aan zodat GPT meer informatie heeft om zich op te baseren. 
 
-**Altneratieve vraag**: Als je geen AI wil gebruiken, geef dan kort antwoord op de volgende vraag: Als je liever een lokaal model zou willen gebruiken dan OpenAI, welke stappen moet je dan zetten, en wat zou er in de code hierboven veranderen?
+**Alternatieve vraag**: Als je geen AI wil gebruiken, geef dan kort antwoord op de volgende vraag: Als je liever een lokaal model zou willen gebruiken dan OpenAI, welke stappen moet je dan zetten, en wat zou er in de code hierboven veranderen?
 
 <Vervang deze tekst door jullie oordeel over het antwoord>
 
@@ -224,7 +224,7 @@ resultaat <- mutate(resultaat, eerste_naam=...)
 head(resultaat)
 ```
 
-**Altneratieve opdracht**: Als je geen AI wil gebruiken, gebruik dan `sample` om willekeurige namen in te vullen in de `eerste_naam` kolom. 
+**Alternatieve opdracht**: Als je geen AI wil gebruiken, gebruik dan `sample` om willekeurige namen in te vullen in de `eerste_naam` kolom. 
 
 
 ## Opschonen: missende waardes
