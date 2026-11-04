@@ -1,0 +1,97 @@
+---
+title: "2026 AUC Lab 6: Analyzing debates"
+author: "Your name(s)"
+format: docx
+editor_options:
+  chunk_output_type: console
+---
+
+For today's lab, we will analyse the [debate between Jon Ossoff and Mike Collins](https://www.atlantanewsfirst.com/2026/10/09/read-full-transcript-us-senate-debate-between-jon-ossoff-mike-collins/), the candidates for the U.S. Senate in Georgia in the 2026 mid-term elections. 
+
+(Note: if you've seen enough of this election, feel free to find a debate from another source to analyse)
+
+## Data
+
+You can use the code below to directly scrape the debate transcript from the news source:
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(tidylo)
+library(rvest)
+
+url <- "https://www.atlantanewsfirst.com/2026/10/09/read-full-transcript-us-senate-debate-between-jon-ossoff-mike-collins/"
+ps <- read_html(url) |> 
+  html_elements("p") |> 
+   html_text2()
+d <- tibble(par=seq_along(ps), text=ps)
+head(d)
+```
+
+## Cleaning
+
+Clean the data by determining the speaker of each paragraph and keeping only the two candidates. Have a look at the data first: who else speaks, and which paragraphs are not part of the debate at all?
+
+Hint: You can use the functions from R4CSS chapter 9, such as `str_extract`, `str_remove`, and `str_detect` here. You can also have a look at the `separate` function. 
+
+```{r}
+```
+
+## Tokenization (R4CSS 10.1)
+
+Unnest the text to one token per row. Do any other preprocessing steps you think are needed, e.g. removing stop words, dealing with punctuation, etc. 
+
+```{r}
+```
+
+## Corpus analysis (R4CSS 10.2)
+
+Compute the list of words that are used most often. If needed, adjust the preprocessing steps above.
+
+```{r}
+```
+
+Now, compute the most typical words for Ossoff and Collins using weighted log-odds
+
+```{r}
+```
+
+How do you interpret these results? 
+
+*Enter 1-3 sentences here*
+
+## Collocations and n-grams (R4CSS 10.3)
+
+Compute the bigrams that are used more than you would expect using PMI:
+
+```{r}
+```
+
+Should any of these bigrams be used as single tokens in the analysis? Why (not)? Should we consider 3-grams as well?
+
+
+*Enter 1-3 sentences here*
+
+## Dictionary Analysis (R4CSS 10.4)
+
+Finally, let's do a dictionary analysis. Based on the results above (or on your personal interest in US/Georgia politics), make a dictionary measuring one or more concepts, which can be topics, frames, or sentiment/tone/stance. Measure how often each politician uses each concept (relative to their total number of turns) and list or visualize the results:
+
+
+```{r}
+```
+
+What is your interpretation of these outcomes?  Do you think they're valid?
+
+*Enter 1-3 sentences here*
+
+## Validation
+
+For one of the concepts in your dictionary, pick (up to) 5 random paragraphs each that match and that don't match the dictionary. Read the paragraphs and determine whether you think this is correct. What does this say about the validity? Can you estimate precision and recall from these results? 
+
+```{r}
+```
+
+*Enter 1-3 sentences here*
+
+Hint: the proportion of correct hits in the 'found' subset directly gives you precision. But recall asks for the proportion of relevant paragraphs that were 
+found -- how can you calculate this?
