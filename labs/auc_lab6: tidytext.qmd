@@ -6,6 +6,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+<!-- this is only 52 turns, so perhaps code all of them? -->
+
 For today's lab, we will analyse the [debate between Jon Ossoff and Mike Collins](https://www.atlantanewsfirst.com/2026/10/09/read-full-transcript-us-senate-debate-between-jon-ossoff-mike-collins/), the candidates for the U.S. Senate in Georgia in the 2026 mid-term elections. 
 
 (Note: if you've seen enough of this election, feel free to find a debate from another source to analyse)

@@ -1,0 +1,149 @@
+---
+title: "2026 AUC Lab 7: Analyzing debates with GPT"
+author: "Your name(s)"
+format: docx
+editor_options:
+  chunk_output_type: console
+---
+
+For today's lab, we will re-analyse the [debate between Jon Ossoff and Mike Collins](https://www.atlantanewsfirst.com/2026/10/09/read-full-transcript-us-senate-debate-between-jon-ossoff-mike-collins/) you analysed in the previous lab.
+
+(if you used another source, use that one instead)
+
+## Data
+
+You can use the code below to directly scrape the debate transcript from the news source:
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(ellmer)
+
+url <- "https://www.atlantanewsfirst.com/2026/10/09/read-full-transcript-us-senate-debate-between-jon-ossoff-mike-collins/"
+ps <- read_html(url) |> 
+  html_elements("p") |> 
+   html_text2()
+# Note: you probably used str_detect and str_extract. `separate` also is really useful here:
+d <- tibble(par=seq_along(ps), text=ps) |>
+  separate(text, into=c("speaker", "text"), sep=":\\s*", extra="merge", fill="left") |>
+  filter(speaker %in% c("Jon Ossoff", "Mike Collins"))
+head(d)
+```
+
+## Conceptualization and gold standard
+
+In the previous lab, you made and validated a dictionary for measuring a concept. 
+In this lab, let's use zero-shot classification with an LLM to do the same. 
+
+
+First, name/explain the concept that you picked last week in about one line. 
+Explicitly list the possible values for the code (e.g. 'yes'/'no' for whether a topic occurs, 'positive', 'neutral', 'negative' for sentiment or stance)
+
+*Insert explanation here (concept and possible values)*
+
+Now, export the dataset `d` to a csv:
+
+```{r}
+write_csv(d, "to_code.csv")
+```
+
+(Note: on a European computer, `write_csv2` / `read_csv2` sometimes works better as it uses semicolons instead of commas)
+
+Open it in excel/google sheets, and manually code the speaking turns in a new column 'gold'.
+Make sure to keep the 'par' column and enter only the allowed values (yes/no, positive/negative etc; 
+it's only 52 speaking turns in total, but feel free to do this collaboratively). 
+Save the coded data as 'gold.csv' and read it back into R as `gold`:
+
+```{r}
+# gold <- read_csv("gold.csv")
+# head(gold)
+```
+
+## Just ask chat (R4CSS ch. 11.1)
+
+Now, formulate a LLM prompt and test it on a single speaking turn using `chat$chat`. 
+You can use the OpenAI key provided in canvas or any other provider that you have a key for.
+You can also run ollama on your computer and use a local model (see 11.2). 
+
+Note: Give the LLM clear instructions on what choices it has for the answer (categories, sentiment, etc) and to start the answer with that result:
+
+```{r}
+```
+
+Does that make sense? Did it obey the instructions? 
+If needed, fine tune the prompt to improve it. 
+
+*Enter 1-3 sentences here*
+
+## Zero-shot classification
+
+Now apply the classification to the whole corpus. 
+Use `parallel_chat_text` and `str_extract` to find the classification for each speaking turn.
+Make sure to use a new chat object (as otherwise it remembers the previous interaction).
+
+You can use the scaffolding below to ensure that results are saved when you run it the first time and then loaded. 
+You could also use the built-in quarto caching, 
+but for scientific research (like this!) I would generally prefer to explicitly save  
+any non-deterministic results so I can be sure that the analyses are reproducible. 
+You can delete `classified_raw.rds` if you want to force a re-run (e.g. if you update the prompt)
+
+```{r}
+# chat <- ...
+# if (!file.exists("classified_raw.rds")) {
+#   classified_raw <- ...
+#   write_rds(classified_raw, "classified_raw.rds")
+# }
+# classified_raw <- read_rds("classified_raw.rds")
+
+# Now extract the values from the LLM output
+# classified <- classified_raw |> ...
+# head(classified)
+```
+
+
+Do the results make sense? Are the answers all one of your categories?
+
+*Enter 1-3 sentences here*
+
+(Note: I set `cache: true` in the global options to make sure that it doesn't re-generate the results every time you render)
+
+## Validation
+
+Compute the accuracy, confusion matrix, and precision and recall of the LLM answers
+using the `gold` standard created earlier. 
+
+```{r}
+```
+
+Re-run the dictionary you used in previous lab and compare it to the same gold standard, also reporting accuracy, precision and recall:
+
+```{r}
+```
+
+How do you interpret those results? 
+
+*1-3 lines of interpretation*
+
+## Bonus: Structured output (R4CSS 11.5)
+
+Rewrite your earlier code to use structured output. Ask separately for the classification (limiting it to the right choices) and its reasoning. 
+
+```{r}
+```
+
+Does structured output make it easier to use the LLM? Why?
+
+*~1 line of answer*
+
+
+## Bonus: Testing different models
+
+Test at least one different model, chat provider, or prompt. Re-run the validation and compare:
+
+```{r}
+```
+
+Does it work better? What do you conclude from this?
+
+*1-3 lines of interpretation*
+
