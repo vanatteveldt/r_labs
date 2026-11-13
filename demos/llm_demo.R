@@ -71,11 +71,10 @@ d <- tribble(
 )
 
 answer_structure <- type_object(
+  reason     = type_string("One short sentence on what the headline implies about how the war is going for Ukraine, or why it implies nothing."),
   label = type_enum(values = c("GOOD", "POOR", "MIXED", "NONE"), 
-                    description="Would a reader of this headline alone conclude things are going better or worse 
-for Ukraine?"),
-  reason     = type_string("Concisely explain why you coded the headline this way")
-)
+                    description = "How the war is going for Ukraine according to the headline, as defined in the instructions."
+))
 
 
 # will read OPENAI_API_KEY from your environment. 
